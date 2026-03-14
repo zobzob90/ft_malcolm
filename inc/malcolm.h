@@ -6,7 +6,7 @@
 /*   By: eric <eric@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/14 09:38:08 by eric              #+#    #+#             */
-/*   Updated: 2026/03/14 11:16:38 by eric             ###   ########.fr       */
+/*   Updated: 2026/03/14 17:25:27 by eric             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,11 @@
 #include <sys/ioctl.h>
 #include <net/if_arp.h>
 #include <net/if_packet.h>
+#include <net/if.h>
 #include <netinet/if_ether.h>
 #include <arpa/inet.h>
+#include <ifaddrs.h>
+#include <netpacket/packet.h>
 
 #include <time.h>
 
