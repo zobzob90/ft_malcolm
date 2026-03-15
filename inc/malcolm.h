@@ -6,7 +6,7 @@
 /*   By: eric <eric@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/14 09:38:08 by eric              #+#    #+#             */
-/*   Updated: 2026/03/14 17:25:27 by eric             ###   ########.fr       */
+/*   Updated: 2026/03/14 18:08:30 by eric             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,10 @@ typedef struct s_entry
 
 //init
 t_entry *add_entry(t_entry **table, uint8_t *ip, uint8_t *mac);
+
+// socket and listening function
+int		get_interface_info(const char *ifname, uint8_t *ip, uint8_t *mac);
+int		create_socket(void);
 
 // utils
 void	free_entry(t_entry *entry);

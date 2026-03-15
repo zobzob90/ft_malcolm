@@ -6,7 +6,7 @@
 /*   By: eric <eric@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/14 09:43:56 by eric              #+#    #+#             */
-/*   Updated: 2026/03/14 17:35:35 by eric             ###   ########.fr       */
+/*   Updated: 2026/03/15 10:04:03 by eric             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,60 @@ int	get_interface_info(const char *ifname, uint8_t *ip, uint8_t *mac)
 	{
 		if (!ifa->ifa_addr || ft_strcmp(ifa->ifa_name, ifname) != 0)
 			continue;
-		
+		if (ifa->ifa_addr->sa_family == AF_INET && ip)
+		{
+			struct sockaddr_in *sa = (struct sockaddr_in *)ifa->ifa_addr;
+			ft_memcpy(ip, &sa->sin_addr, 4);
+		}
+		if (ifa->ifa_addr->sa_family == AF_PACKET && mac)
+		{
+			struct sockaddr_ll *s = (struct sockaddr_ll *)ifa->ifa_addr;
+			ft_memcpy(mac, s->sll_addr, 6);
+		}
+		ifa = ifa->ifa_next;
 	}
 	freeifaddrs(ifaddr);
 	return (0);
+}
+
+int	set_promiscuous_mode(int sockfd, const char *ifname)
+{
+	struct ifreq	ifr;
+	
+	ft_memset(&ifr, 0, sizeof(struct ifreq));
+	ft_strlcpy(ifr.ifr_name, ifname, IFNAMSIZ);
+
+	if (ioctl(sockfd, SIOCGIFFLAGS, &ifr) == -1)
+	{
+		fprint(stderr, "ioctl SIOCGIFFLAGS failed\n");
+		return (-1);
+	}
+	ifr.ifr_flags |= IFF_PROMISC;
+
+	if (ioctl(sockfd, SIOCSIFFLAGS, &ifr) == -1)
+	{
+		fprintf(stderr, "ioctl SIOCSIFFLAGS failed\n");
+		return (-1);
+	}
+	return (0);
+}
+
+
+int	create_socket(const char *ifname)
+{
+	int	sockfd;
+
+	sockfd = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
+	if (sockfd < 0)
+	{
+		fprintf(stderr, "Error in socket creation\n");
+		return (-1);
+	}
+	if (set_promiscuous_mode(sockfd, ifname) < 0)
+	{
+		fprintf(stderr, "Error in promiscuous mode\n");
+		close (sockfd);
+		return (-1);
+	}
+	return (sockfd);
 }
