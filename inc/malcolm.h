@@ -6,7 +6,7 @@
 /*   By: eric <eric@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/14 09:38:08 by eric              #+#    #+#             */
-/*   Updated: 2026/03/14 18:08:30 by eric             ###   ########.fr       */
+/*   Updated: 2026/03/15 11:11:25 by eric             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,13 +35,14 @@
 
 #define ARP_REQUEST 1
 #define ARP_REPLY	2
+#define BUFFER_SIZE 2048
 
 /*Structure header Ethernet, qui est le debut de tous les paquets reseaux LAN*/
 typedef struct s_ethernet
 {
-	uint8_t		dst_mac[6]; // -> 6 bytes, MAC du destinataire	AA:BB:CC:DD:EE:FF
-	uint8_t		src_mac[6]; // -> 6 bytes, MAC de l'emeteur 	11:22:33:44:55:66
-	uint16_t	type;		// -> 2 bytes, 0x0800 = IPv4, 0x0806 = ARP, 0x86DD = IPv6
+	uint8_t		dst_mac[6];	 	// -> 6 bytes, MAC du destinataire	AA:BB:CC:DD:EE:FF
+	uint8_t		src_mac[6]; 	// -> 6 bytes, MAC de l'emeteur 	11:22:33:44:55:66
+	uint16_t	type;			// -> 2 bytes, 0x0800 = IPv4, 0x0806 = ARP, 0x86DD = IPv6
 } __attribute__((packed)) t_ethernet;
 
 /*Structure ARP pour le contenu du paquet Address Rsolution Protocol*/
@@ -66,15 +67,21 @@ typedef struct s_entry
 	struct s_entry	*next;
 } t_entry;
 
-//init
+// init
 t_entry *add_entry(t_entry **table, uint8_t *ip, uint8_t *mac);
 
 // socket and listening function
 int		get_interface_info(const char *ifname, uint8_t *ip, uint8_t *mac);
-int		create_socket(void);
+int		set_promiscuous_mode(int sockfd, const char *ifname);
+int		create_socket(const char *ifname);
+ssize_t	receive_packet(int sockfd, void *buffer, size_t buflen);
+void	sniffing(int sockfd);
+
+// parsing
 
 // utils
 void	free_entry(t_entry *entry);
+void	print_arp(t_arp *arp);
 void	print_mac(uint8_t mac[6]);
 void	print_ip(uint8_t ip[4]);
 

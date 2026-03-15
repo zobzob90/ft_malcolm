@@ -6,7 +6,7 @@
 /*   By: eric <eric@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/14 09:43:56 by eric              #+#    #+#             */
-/*   Updated: 2026/03/15 10:04:03 by eric             ###   ########.fr       */
+/*   Updated: 2026/03/15 10:39:37 by eric             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,6 @@ int	set_promiscuous_mode(int sockfd, const char *ifname)
 	return (0);
 }
 
-
 int	create_socket(const char *ifname)
 {
 	int	sockfd;
@@ -83,4 +82,35 @@ int	create_socket(const char *ifname)
 		return (-1);
 	}
 	return (sockfd);
+}
+
+ssize_t	receive_packet(int sockfd, void *buffer, size_t buflen)
+{
+	return (recvfrom(sockfd, buffer, buflen, 0, NULL, NULL));
+}
+
+void	sniffing(int sockfd)
+{
+	ssize_t len;
+	uint8_t	buffer[BUFFER_SIZE];
+	while (1)
+	{
+		len = receive_packet(sockfd, buffer, BUFFER_SIZE);
+		if (len < 0)
+		{
+			fprintf(stderr, "Error in packet reception\n");
+			break ;
+		}
+		if ((ssize_t)len < sizeof(t_ethernet))
+			continue;
+		t_ethernet *eth = (t_ethernet *)buffer;
+		if (ntohs(eth->type) == 0x0806)
+		{
+			if ((ssize_t)len >= sizeof(t_ethernet) + sizeof(t_arp))
+			{
+				t_arp *arp = (t_arp *)(buffer + sizeof(t_ethernet));
+				print_arp(arp);
+			}
+		}
+	}
 }
