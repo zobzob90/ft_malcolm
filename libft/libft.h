@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ertrigna <ertrigna@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eric <eric@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 11:55:52 by ertrigna          #+#    #+#             */
-/*   Updated: 2024/11/11 16:18:36 by ertrigna         ###   ########.fr       */
+/*   Updated: 2026/03/16 11:06:28 by eric             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ int		ft_toupper(int c);
 int		ft_tolower(int c);
 int		ft_atoi(const char *str);
 void	*ft_calloc(size_t num, size_t size);
+int		ft_strcmp(const char *s1, const char *s2);
 
 /*Part 2*/
 char	*ft_substr(char const *s, unsigned int start, size_t len);

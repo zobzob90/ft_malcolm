@@ -6,7 +6,7 @@
 /*   By: eric <eric@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/14 09:43:56 by eric              #+#    #+#             */
-/*   Updated: 2026/03/15 10:39:37 by eric             ###   ########.fr       */
+/*   Updated: 2026/03/16 12:57:49 by eric             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 
 // Recuperer l'adresse IP et MAC d'une interface reseau locale
 // Prend en param, le nom de l'interface, un tableau pour stocker l'adresse IP et MAC
-
 int	get_interface_info(const char *ifname, uint8_t *ip, uint8_t *mac)
 {
 	struct ifaddrs *ifaddr;
@@ -26,7 +25,10 @@ int	get_interface_info(const char *ifname, uint8_t *ip, uint8_t *mac)
 	while (ifa)
 	{
 		if (!ifa->ifa_addr || ft_strcmp(ifa->ifa_name, ifname) != 0)
-			continue;
+		{
+			ifa = ifa->ifa_next;
+			continue;	
+		}
 		if (ifa->ifa_addr->sa_family == AF_INET && ip)
 		{
 			struct sockaddr_in *sa = (struct sockaddr_in *)ifa->ifa_addr;
@@ -43,6 +45,38 @@ int	get_interface_info(const char *ifname, uint8_t *ip, uint8_t *mac)
 	return (0);
 }
 
+int	find_interface(char ifname[IFNAMSIZ], uint8_t ip[4], uint8_t mac[6])
+{
+	struct ifaddrs *ifaddr;
+	struct ifaddrs *ifa;
+
+	if (getifaddrs(&ifaddr) == -1)
+		return (-1);
+	ifa = ifaddr;
+	for (ifa = ifaddr; ifa; ifa = ifa->ifa_next)
+	{
+		if (!ifa->ifa_addr)
+			continue;
+		if (ifa->ifa_addr->sa_family != AF_INET)
+            continue;
+		if (!(ifa->ifa_flags & IFF_UP))
+            continue;
+        if (ifa->ifa_flags & IFF_LOOPBACK)
+            continue;
+        if (ifa->ifa_flags & IFF_NOARP)
+            continue;
+		
+		ft_strlcpy(ifname, ifa->ifa_name, IFNAMSIZ);
+		if (get_interface_info(ifname, ip, mac) == 0)
+		{
+			freeifaddrs(ifaddr);
+			return (0);
+		}	
+	}
+	freeifaddrs(ifaddr);
+	return (-1);
+}
+
 int	set_promiscuous_mode(int sockfd, const char *ifname)
 {
 	struct ifreq	ifr;
@@ -52,7 +86,7 @@ int	set_promiscuous_mode(int sockfd, const char *ifname)
 
 	if (ioctl(sockfd, SIOCGIFFLAGS, &ifr) == -1)
 	{
-		fprint(stderr, "ioctl SIOCGIFFLAGS failed\n");
+		fprintf(stderr, "ioctl SIOCGIFFLAGS failed\n");
 		return (-1);
 	}
 	ifr.ifr_flags |= IFF_PROMISC;
@@ -101,12 +135,12 @@ void	sniffing(int sockfd)
 			fprintf(stderr, "Error in packet reception\n");
 			break ;
 		}
-		if ((ssize_t)len < sizeof(t_ethernet))
+		if ((size_t)len < sizeof(t_ethernet))
 			continue;
 		t_ethernet *eth = (t_ethernet *)buffer;
 		if (ntohs(eth->type) == 0x0806)
 		{
-			if ((ssize_t)len >= sizeof(t_ethernet) + sizeof(t_arp))
+			if ((size_t)len >= sizeof(t_ethernet) + sizeof(t_arp))
 			{
 				t_arp *arp = (t_arp *)(buffer + sizeof(t_ethernet));
 				print_arp(arp);

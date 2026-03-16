@@ -6,7 +6,7 @@
 /*   By: eric <eric@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/14 09:38:08 by eric              #+#    #+#             */
-/*   Updated: 2026/03/15 17:47:46 by eric             ###   ########.fr       */
+/*   Updated: 2026/03/16 12:55:46 by eric             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,7 @@ t_entry *add_entry(t_entry **table, uint8_t *ip, uint8_t *mac);
 
 // socket and listening function
 int		get_interface_info(const char *ifname, uint8_t *ip, uint8_t *mac);
+int		find_interface(char ifname[IFNAMSIZ], uint8_t ip[4], uint8_t mac[6]);
 int		set_promiscuous_mode(int sockfd, const char *ifname);
 int		create_socket(const char *ifname);
 ssize_t	receive_packet(int sockfd, void *buffer, size_t buflen);
