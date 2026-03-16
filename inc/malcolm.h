@@ -6,7 +6,7 @@
 /*   By: eric <eric@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/14 09:38:08 by eric              #+#    #+#             */
-/*   Updated: 2026/03/15 11:11:25 by eric             ###   ########.fr       */
+/*   Updated: 2026/03/15 17:47:46 by eric             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,9 +78,13 @@ ssize_t	receive_packet(int sockfd, void *buffer, size_t buflen);
 void	sniffing(int sockfd);
 
 // parsing
+int		parse_ip(const char *s, uint8_t ip[4]);
+int 	parse_mac(const char *s, uint8_t mac[6]);
+int		parse_args(int ac, char *av[], t_entry *src, t_entry *dest);
 
 // utils
 void	free_entry(t_entry *entry);
+int		hex_char_to_val(char c);
 void	print_arp(t_arp *arp);
 void	print_mac(uint8_t mac[6]);
 void	print_ip(uint8_t ip[4]);

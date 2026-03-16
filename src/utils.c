@@ -6,7 +6,7 @@
 /*   By: eric <eric@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/14 09:37:47 by eric              #+#    #+#             */
-/*   Updated: 2026/03/15 10:46:40 by eric             ###   ########.fr       */
+/*   Updated: 2026/03/15 17:47:27 by eric             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,4 +45,15 @@ void	print_arp(t_arp *arp)
 	printf(" | Target IP: ");
 	print_ip(arp->target_ip);
 	printf("\n");
+}
+
+int	hex_char_to_val(char c)
+{
+	if (c >= '0' && c <= '9')
+		return (c - '0');
+	if (c >= 'a' && c <= 'f')
+		return (c - 'a' + 10);
+	if (c >= 'A' && c <= 'F')
+		return (c - 'A' + '10');
+	return (-1);
 }
