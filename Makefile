@@ -9,6 +9,7 @@ LIBFT		= $(LIBFTDIR)/libft.a
 
 SRCDIR		= src
 SRC			= $(SRCDIR)/main.c \
+			  $(SRCDIR)/init.c \
 			  $(SRCDIR)/socket.c \
 			  $(SRCDIR)/parsing.c \
 			  $(SRCDIR)/utils.c

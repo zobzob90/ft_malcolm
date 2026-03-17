@@ -6,11 +6,19 @@
 /*   By: eric <eric@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/14 09:36:59 by eric              #+#    #+#             */
-/*   Updated: 2026/03/16 12:55:59 by eric             ###   ########.fr       */
+/*   Updated: 2026/03/17 14:31:32 by eric             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "malcolm.h"
+
+volatile sig_atomic_t g_signal = 0;
+
+void	signal_handler(int signal)
+{
+	(void)signal;
+	g_signal = 1;
+}
 
 int main(int ac, char *av[])
 {
@@ -29,10 +37,16 @@ int main(int ac, char *av[])
 		return (1);
 	}
 	printf("Using interface: %s\n", ifname);
+	signal(SIGINT, signal_handler);
 	sockfd = create_socket(ifname);
 	if (sockfd < 0)
 		return (1);
+	printf("Sending ARP request ...\n");
+	send_arp_packet(sockfd, ifname, &src, &dest, ARP_REQUEST);
+	printf("Sending ARP reply ...\n");
+	send_arp_packet(sockfd, ifname, &src, &dest, ARP_REPLY);
 	sniffing(sockfd);
+	printf("\nShutting down ...\n");
 	close (sockfd);
 	return (0);
 }

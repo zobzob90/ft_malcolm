@@ -6,7 +6,7 @@
 /*   By: eric <eric@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/14 09:38:08 by eric              #+#    #+#             */
-/*   Updated: 2026/03/16 12:55:46 by eric             ###   ########.fr       */
+/*   Updated: 2026/03/17 15:33:29 by eric             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@
 #include <arpa/inet.h>
 #include <ifaddrs.h>
 #include <netpacket/packet.h>
-
+#include <signal.h>
 #include <time.h>
 
 #include "../libft/libft.h"
@@ -76,12 +76,17 @@ int		find_interface(char ifname[IFNAMSIZ], uint8_t ip[4], uint8_t mac[6]);
 int		set_promiscuous_mode(int sockfd, const char *ifname);
 int		create_socket(const char *ifname);
 ssize_t	receive_packet(int sockfd, void *buffer, size_t buflen);
+int		is_arp_duplicated(t_entry *entry, uint8_t *ip, uint8_t *mac);
 void	sniffing(int sockfd);
+ssize_t	send_arp_packet(int sockfd, const char *ifname, t_entry *sender, t_entry *target, uint16_t opcode);
 
 // parsing
 int		parse_ip(const char *s, uint8_t ip[4]);
 int 	parse_mac(const char *s, uint8_t mac[6]);
 int		parse_args(int ac, char *av[], t_entry *src, t_entry *dest);
+
+// signal
+
 
 // utils
 void	free_entry(t_entry *entry);
