@@ -6,7 +6,7 @@
 /*   By: eric <eric@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/14 09:43:56 by eric              #+#    #+#             */
-/*   Updated: 2026/03/17 15:42:41 by eric             ###   ########.fr       */
+/*   Updated: 2026/03/19 10:35:05 by eric             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,10 +125,17 @@ ssize_t	receive_packet(int sockfd, void *buffer, size_t buflen)
 
 int	is_arp_duplicated(t_entry *entry, uint8_t *ip, uint8_t *mac)
 {
+	uint8_t	zero_mac[6] = {0, 0, 0, 0, 0, 0};
 	while (entry)
 	{
 		if (ft_memcmp(entry->ip, ip, 4) == 0)
 		{
+			// Ignorer les MAC vide (premiere detection)
+			if (ft_memcmp(entry->mac, zero_mac, 6) == 0)
+			{
+				ft_memcpy(entry->mac, mac, 6);
+				return (0);
+			}
 			if (ft_memcmp(entry->mac, mac, 6) != 0)
 			{
 				printf("\n⚠️  ARP SPOOFING DETECTED!\n");
@@ -157,6 +164,7 @@ void	sniffing(int sockfd)
 	t_entry							*arp_table;				// stocke les entree ARP dans t_entry
 	
 	extern volatile sig_atomic_t	g_signal;
+	arp_table = NULL;
 	
 	while (!g_signal)
 	{
